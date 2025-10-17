@@ -1,11 +1,12 @@
-// services/notificationService.ts
-import { supabase } from '../supabaseConfig.ts';
+// app-padres/services/notificationService.ts
+
+import { Platform, Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+import { supabase } from '../supabaseConfig.ts'; // Asegúrate de que la ruta sea correcta
 
-// --- ARREGLO DEFINITIVO ---
-// Se añaden las propiedades que faltaban: shouldShowBanner y shouldShowList.
+// Configura cómo se deben mostrar las notificaciones cuando la app está en primer plano
 Notifications.setNotificationHandler({
   handleNotification: async (): Promise<Notifications.NotificationBehavior> => {
     return {
@@ -17,49 +18,66 @@ Notifications.setNotificationHandler({
     };
   },
 });
-
-
+// Función principal para obtener el token de notificación
 export async function registerForPushNotificationsAsync() {
-  if (!Device.isDevice) {
-    console.log('Las notificaciones push solo funcionan en dispositivos físicos.');
-    return;
-  }
-
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-  if (finalStatus !== 'granted') {
-    console.log('Permiso de notificaciones no concedido.');
-    return;
-  }
-
-  try {
-    const token = (await Notifications.getExpoPushTokenAsync({
-      projectId: '10c6abb2-e158-4162-9a1c-a7a440fbeb02', // 👈 ¡RECUERDA REEMPLAZAR ESTO!
-    })).data;
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user && token) {
-      const { error } = await supabase
-        .from('push_tokens')
-        .upsert({ user_id: user.id, token: token }, { onConflict: 'user_id, token' });
-      
-      if (error) console.error("Error al guardar el token:", error);
-      else console.log("Token de notificaciones guardado exitosamente.");
-    }
-  } catch (error) {
-    console.error("Error al obtener el push token:", error);
-  }
+  let token;
 
   if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
+    await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#FF231F7C',
     });
   }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    // Si no se ha determinado el permiso, se solicita al usuario
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    
+    // Si después de solicitarlo, el permiso sigue sin ser concedido, devolvemos el estado
+    if (finalStatus !== 'granted') {
+      return { status: finalStatus, token: null }; // Devolvemos el estado
+    }
+    
+    // Obtener el token
+    try {
+      // ✅ CORRECCIÓN PRINCIPAL AQUÍ: Se usa 'easConfig' en lugar de 'expoConfig'
+      const projectId = (Constants as any).easConfig?.projectId;
+      if (!projectId) {
+        throw new Error('El projectId de EAS no está configurado en app.json');
+      }
+      token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+    } catch (e) {
+      console.error("Error al obtener el token de notificación:", e);
+      return { status: 'error', token: null };
+    }
+
+  } else {
+    Alert.alert('Debes usar un dispositivo físico para recibir notificaciones push.');
+    return { status: 'not-a-device', token: null };
+  }
+
+  return { status: 'granted', token: token }; // Devolvemos el estado y el token
+}
+
+// Función para guardar el token en la base de datos
+export async function saveTokenToSupabase(userId: string, token: string) {
+    if (!userId || !token) return;
+
+    const { error } = await supabase
+      .from('push_tokens')
+      .upsert({ user_id: userId, token: token }, { onConflict: 'token' });
+
+    if (error) {
+      console.error('Error al guardar el token en Supabase:', error);
+    } else {
+      console.log('Token guardado exitosamente.');
+    }
 }

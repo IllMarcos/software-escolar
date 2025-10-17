@@ -1,8 +1,6 @@
 {
-  "compilerOptions": {
-    "lib": ["deno.ns", "dom"]
-  },
   "imports": {
-    "google-auth-library": "npm:google-auth-library@9"
+    "expo-server-sdk": "npm:expo-server-sdk@^3.9.0",
+    "google-auth-library": "npm:google-auth-library@^9.15.1"
   }
 }

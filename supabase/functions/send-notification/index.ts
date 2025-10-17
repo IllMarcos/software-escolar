@@ -2,7 +2,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
-import { GoogleAuth } from "https://esm.sh/google-auth-library@9.14.1";
+import { GoogleAuth } from "google-auth-library";
 
 const FIREBASE_PROJECT_ID = "software-escolar";
 const FCM_API_URL = `https://fcm.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/messages:send`;

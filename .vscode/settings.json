@@ -1,9 +1,5 @@
 {
-  "deno.enable": true,
-  "deno.lint": true,
-  "deno.unstable": true,
-  "deno.lint.rules.exclude": [
-    "no-import-prefix",
-    "no-explicit-any"
-  ]
+    "deno.enable": true,
+    "deno.lint": true,
+    "deno.config": "./supabase/functions/send-notification/deno.json"
 }
