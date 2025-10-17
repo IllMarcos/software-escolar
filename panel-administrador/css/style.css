@@ -1,0 +1,186 @@
+/* css/style.css */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #f4f4f9;
+}
+
+header {
+    background-color: #4a4a8c;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main {
+    padding: 1rem 2rem;
+}
+
+section {
+    background-color: white;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estilos para formularios y botones */
+.form-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+input[type="text"] {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 8px 15px;
+    border: none;
+    background-color: #4a4a8c;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #353564;
+}
+
+/* Estilos para la lista de grupos */
+#grupos-lista {
+    list-style: none;
+    padding: 0;
+}
+
+#grupos-lista li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.group-actions button {
+    margin-left: 8px;
+    background-color: #f44336; /* Rojo para borrar */
+}
+
+.group-actions .edit-btn {
+    background-color: #ff9800; /* Naranja para editar */
+}
+
+/* Estilos para la tabla de alumnos */
+#alumnos-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+#alumnos-table th, #alumnos-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+#alumnos-table th {
+    background-color: #f2f2f2;
+}
+
+.student-actions button {
+    margin-right: 5px;
+}
+
+/* css/style.css - Añadir al final */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+}
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+#qr-modal-image img {
+    width: 256px;
+    height: 256px;
+    margin: 1rem 0;
+}
+#qr-download-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 10px 20px;
+    background-color: #4a4a8c;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+/* css/style.css - Añadir al final */
+#add-aviso-form {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+#add-aviso-form textarea {
+    min-height: 80px;
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+#add-aviso-form select {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#avisos-lista li {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+#avisos-lista .aviso-content h4 {
+    margin: 0 0 5px 0;
+}
+#avisos-lista .aviso-content p {
+    margin: 0;
+}
+#avisos-lista .aviso-meta {
+    font-size: 0.8em;
+    color: #777;
+    text-align: right;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Panel de Administración</h1>
+        <button id="logout-button">Cerrar Sesión</button>
+    </header>
+
+    <main>
+        <section id="grupos-section">
+            <h2>Gestión de Grupos</h2>
+            <form id="add-group-form" class="form-container">
+                <input type="text" id="group-name" placeholder="Nombre del nuevo grupo" required>
+                <button type="submit">Añadir Grupo</button>
+            </form>
+            <ul id="grupos-lista"></ul>
+        </section>
+
+        <section id="alumnos-section">
+            <h2>Gestión de Alumnos</h2>
+            <form id="add-student-form" class="form-container">
+                <input type="text" id="student-name" placeholder="Nombre completo del alumno" required>
+                <select id="student-group-select" required>
+                    <option value="" disabled selected>Selecciona un grupo</option>
+                </select>
+                <button type="submit">Añadir Alumno</button>
+            </form>
+            
+            <table id="alumnos-table">
+                <thead>
+                    <tr>
+                        <th>Nombre del Alumno</th>
+                        <th>Grupo</th>
+                        <th>Código QR</th> 
+                        <th>Invitación</th> <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="alumnos-lista"></tbody>
+            </table>
+        </section>
+
+        <section id="avisos-section">
+            <h2>Gestión de Avisos</h2>
+            <form id="add-aviso-form" class="form-container">
+                <input type="text" id="aviso-title" placeholder="Título del aviso" required>
+                <textarea id="aviso-message" placeholder="Mensaje del aviso..." required></textarea>
+                <select id="aviso-group-select" required>
+                    <option value="all" selected>Para toda la escuela</option>
+                    </select>
+                <button type="submit">Enviar Aviso</button>
+            </form>
+            
+            <h3>Historial de Avisos Enviados</h3>
+            <ul id="avisos-lista">
+                </ul>
+        </section>
+
+    </main>
+
+    <div id="qr-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <span id="close-modal" class="close-btn">&times;</span>
+            <h3>Código QR de <span id="qr-modal-student-name"></span></h3>
+            <div id="qr-modal-image"></div>
+            <a id="qr-download-link" download="codigo-qr.png">Descargar</a>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
