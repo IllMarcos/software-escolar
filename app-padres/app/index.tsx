@@ -3,9 +3,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, StatusBar, FlatList, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { supabase } from '../supabaseConfig.ts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter, Link } from 'expo-router'; // Asegúrate de importar Link
+import { useRouter, Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { User } from '@supabase/supabase-js';
+import { registerForPushNotificationsAsync, saveTokenToSupabase } from '../services/notificationService.ts';
 
 type HistorialItem = {
   id: number;
@@ -13,13 +14,11 @@ type HistorialItem = {
   timestamp: string;
 };
 
-// --- ✅ CORRECCIÓN #1: TIPO DE DATO ---
-// 'grupos' es un objeto, no un array, porque un alumno solo pertenece a un grupo.
 type AlumnoInfo = {
   id: string;
   nombre_completo: string;
   qr_code_url: string;
-  grupos: { nombre: string } | null; // Corregido: de array de objetos a un solo objeto o null
+  grupos: { nombre: string }[] | null;
 };
 
 export default function HomeScreen() {
@@ -54,6 +53,7 @@ export default function HomeScreen() {
         return;
       }
       
+      setAlumno(studentData as AlumnoInfo);
       
       const { data: historyData } = await supabase
         .from('historial_asistencia')
@@ -70,6 +70,19 @@ export default function HomeScreen() {
 
   useEffect(() => {
     fetchStudentData();
+
+    const setupNotifications = async () => {
+      const { status, token } = await registerForPushNotificationsAsync();
+      if (status === 'granted' && token) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await saveTokenToSupabase(user.id, token);
+        }
+      }
+    };
+
+    setupNotifications();
+    
   }, [fetchStudentData]);
 
   const handleLogout = async () => {
@@ -109,7 +122,7 @@ export default function HomeScreen() {
             {user && <Text style={styles.headerSubtitle}>{user.email}</Text>}
           </View>
           <View style={styles.headerIcons}>
-            <Link href="../avisos" asChild>
+            <Link href="/avisos" asChild>
               <TouchableOpacity style={{ marginRight: 16 }}>
                 <Ionicons name="notifications-outline" size={28} color="#4a5568" />
               </TouchableOpacity>
@@ -125,10 +138,8 @@ export default function HomeScreen() {
             <View style={styles.studentCard}>
               <View>
                 <Text style={styles.studentName}>{alumno.nombre_completo}</Text>
-                {/* --- ✅ CORRECCIÓN #2: LÓGICA DE RENDERIZADO --- */}
-                {/* Se accede directamente a la propiedad 'nombre' del objeto 'grupos'. */}
                 <Text style={styles.studentGroup}>
-                  Grupo: {alumno.grupos ? alumno.grupos.nombre : 'Sin grupo asignado'}
+                  Grupo: {alumno.grupos && alumno.grupos.length > 0 ? alumno.grupos[0].nombre : 'Sin grupo asignado'}
                 </Text>
               </View>
               {alumno.qr_code_url && (
@@ -156,7 +167,6 @@ export default function HomeScreen() {
   );
 }
 
-// ESTILOS (sin cambios, solo se añade el estilo para headerIcons)
 const styles = StyleSheet.create({
     wrapper: {
         flex: 1,
